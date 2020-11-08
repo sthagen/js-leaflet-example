@@ -9,7 +9,7 @@ OFFSET = 3
 END_ROW_CODE_STR = str(99)
 
 
-def parse_ndb(text):
+def parse_ndb(payload):
     """
     Non-directional beacon (NDB):
     -----------------------------
@@ -41,8 +41,8 @@ def parse_ndb(text):
     2  52.11633300 -004.55983300      0   370  20    0.0 AP   ABERPORTH NDB
     2  05.25041700 -003.95802800      0   294  50    0.0 PB   ABIDJAN FELIX HOUPHOUET BOIGNY NDB
     """
-    rowcode = 2
-    lat, rest = text.lstrip().split(" ", 1)
+    row_code = 2
+    lat, rest = payload.lstrip().split(" ", 1)
     lat = float(lat)
     lon, rest = rest.lstrip().split(" ", 1)
     lon = float(lon)
@@ -56,10 +56,10 @@ def parse_ndb(text):
     local_id, rest = rest.lstrip().split(" ", 1)
     name = rest.strip()
     
-    return "NDB", rowcode, lat, lon, elev_ft_above_msl, freq_khz, max_range_nautical_miles, None, local_id, name
+    return "NDB", row_code, lat, lon, elev_ft_above_msl, freq_khz, max_range_nautical_miles, None, local_id, name
 
 
-def parse_vor(text):
+def parse_vor(payload):
     """
     Includes VOR-DMEs and VORTACs:
     ------------------------------
@@ -92,8 +92,8 @@ def parse_vor(text):
     3  16.75847222 -099.75397222     16 11590 130    8.0 ACA  ACAPULCO VOR-DME
     3  09.55208333 -069.23791667    758 11340 130  -10.0 AGV  ACARIGUA VOR-DME
     """
-    rowcode = 3
-    lat, rest = text.lstrip().split(" ", 1)
+    row_code = 3
+    lat, rest = payload.lstrip().split(" ", 1)
     lat = float(lat)
     lon, rest = rest.lstrip().split(" ", 1)
     lon = float(lon)
@@ -108,10 +108,10 @@ def parse_vor(text):
     local_id, rest = rest.lstrip().split(" ", 1)
     name = rest.strip()
 
-    return "VOR", rowcode, lat, lon, elev_ft_above_msl, freq_mhz_x_100, max_range_nautical_miles, slv_var, local_id, name
+    return "VOR", row_code, lat, lon, elev_ft_above_msl, freq_mhz_x_100, max_range_nautical_miles, slv_var, local_id, name
 
 
-def parse_loc(text, rowcode):
+def parse_loc(payload, row_code):
     """
     Includes localisers (inc. LOC-only), LDAs and SDFs:
     ---------------------------------------------------
@@ -140,11 +140,28 @@ def parse_loc(text, rowcode):
     4  65.74222222 -019.57722222      8 10970  18     351.000 IKR  BIKR 01  ILS-cat-I
 
     """
-    rowcode = rowcode
-    return "LOC", rowcode, text
+    row_code = row_code
+    lat, rest = payload.lstrip().split(" ", 1)
+    lat = float(lat)
+    lon, rest = rest.lstrip().split(" ", 1)
+    lon = float(lon)
+    elev_ft_above_msl, rest = rest.lstrip().split(" ", 1)
+    elev_ft_above_msl = int(elev_ft_above_msl)
+    freq_mhz_x_100, rest = rest.lstrip().split(" ", 1)
+    freq_mhz_x_100 = int(freq_mhz_x_100)
+    max_range_nautical_miles, rest = rest.lstrip().split(" ", 1)
+    max_range_nautical_miles = int(max_range_nautical_miles)
+    bearing_true_degrees, rest = rest.lstrip().split(" ", 1)
+    bearing_true_degrees = float(bearing_true_degrees)
+    local_id, rest = rest.lstrip().split(" ", 1)
+    airport_icao, rest = rest.lstrip().split(" ", 1)
+    runway_no, rest = rest.lstrip().split(" ", 1)
+    name = rest.strip()
+
+    return "LOC", row_code, lat, lon, elev_ft_above_msl, freq_mhz_x_100, max_range_nautical_miles, bearing_true_degrees, local_id, airport_icao, runway_no, name
 
 
-def parse_gli(text):
+def parse_gli(payload):
     """
     Glideslope associated with an ILS:
     ----------------------------------
@@ -178,11 +195,28 @@ def parse_gli(text):
     6  42.58277800  021.03630600   1794 11010  10  300175.689 PRS  BKPR 17  GS
 
     """
-    rowcode = 6
-    return "GLI", rowcode, text
+    row_code = 6
+    lat, rest = payload.lstrip().split(" ", 1)
+    lat = float(lat)
+    lon, rest = rest.lstrip().split(" ", 1)
+    lon = float(lon)
+    elev_ft_above_msl, rest = rest.lstrip().split(" ", 1)
+    elev_ft_above_msl = int(elev_ft_above_msl)
+    freq_mhz_x_100, rest = rest.lstrip().split(" ", 1)
+    freq_mhz_x_100 = int(freq_mhz_x_100)
+    max_range_nautical_miles, rest = rest.lstrip().split(" ", 1)
+    max_range_nautical_miles = int(max_range_nautical_miles)
+    bearing_true_degrees, rest = rest.lstrip().split(" ", 1)
+    bearing_true_degrees = float(bearing_true_degrees)
+    local_id, rest = rest.lstrip().split(" ", 1)
+    airport_icao, rest = rest.lstrip().split(" ", 1)
+    runway_no, rest = rest.lstrip().split(" ", 1)
+    name = rest.strip()
+
+    return "GLI", row_code, lat, lon, elev_ft_above_msl, freq_mhz_x_100, max_range_nautical_miles, bearing_true_degrees, local_id, airport_icao, runway_no, name
 
 
-def parse_mrk(text, rowcode):
+def parse_mrk(payload, row_code):
     """
     Marker beacons - Outer (OM), Middle (MM) and Inner (IM) Markers:
     ----------------------------------------------------------------
@@ -210,11 +244,26 @@ def parse_mrk(text, rowcode):
     7  36.75166100  003.31432200     82     0   0     232.742 ---- DAAG 23  OM
 
     """
-    rowcode = rowcode
-    return "MRK", rowcode, text
+    row_code = row_code
+    lat, rest = payload.lstrip().split(" ", 1)
+    lat = float(lat)
+    lon, rest = rest.lstrip().split(" ", 1)
+    lon = float(lon)
+    elev_ft_above_msl, rest = rest.lstrip().split(" ", 1)
+    elev_ft_above_msl = int(elev_ft_above_msl)
+    _, rest = rest.lstrip().split(" ", 1)
+    _, rest = rest.lstrip().split(" ", 1)
+    bearing_true_degrees, rest = rest.lstrip().split(" ", 1)
+    bearing_true_degrees = float(bearing_true_degrees)
+    _, rest = rest.lstrip().split(" ", 1)
+    airport_icao, rest = rest.lstrip().split(" ", 1)
+    runway_no, rest = rest.lstrip().split(" ", 1)
+    name = rest.strip()
+
+    return "MRK", row_code, lat, lon, elev_ft_above_msl, None, None, bearing_true_degrees, None, airport_icao, runway_no, name
 
 
-def parse_dme(text, rowcode):
+def parse_dme(payload, row_code):
     """
     Distance Measuring Equipment (DME):
     -----------------------------------
@@ -244,43 +293,66 @@ def parse_dme(text, rowcode):
     12  45.52196465 -073.40816937     90 11110  18       0.000 IHU  CYHU 24R DME-ILS
 
     """
-    rowcode = rowcode
-    return "DME", rowcode, text
+    row_code = row_code
+    lat, rest = payload.lstrip().split(" ", 1)
+    lat = float(lat)
+    lon, rest = rest.lstrip().split(" ", 1)
+    lon = float(lon)
+    elev_ft_above_msl, rest = rest.lstrip().split(" ", 1)
+    elev_ft_above_msl = int(elev_ft_above_msl)
+    freq_mhz_x_100, rest = rest.lstrip().split(" ", 1)
+    freq_mhz_x_100 = int(freq_mhz_x_100)
+    max_range_nautical_miles, rest = rest.lstrip().split(" ", 1)
+    max_range_nautical_miles = int(max_range_nautical_miles)
+    bearing_true_degrees, rest = rest.lstrip().split(" ", 1)
+    bearing_true_degrees = float(bearing_true_degrees)
+    local_id, rest = rest.lstrip().split(" ", 1)
+    airport_icao, rest = rest.lstrip().split(" ", 1)
+
+    try:
+        runway_no, rest = rest.lstrip().split(" ", 1)
+        name = rest.strip()
+    except ValueError:
+        runway_no = None
+        name = rest.strip()
+    return "DME", row_code, lat, lon, elev_ft_above_msl, freq_mhz_x_100, max_range_nautical_miles, bearing_true_degrees, local_id, airport_icao, runway_no, name
 
 
-def has_data(text):
+def has_data(row):
     """Detect end of data token."""
-    return not text.startswith(END_ROW_CODE_STR)
+    return not row.startswith(END_ROW_CODE_STR)
 
 
-def parse(text):
+def parse(row):
 
-    if not has_data(text):
+    if not has_data(row):
         return None
 
     parser = {
         2: parse_ndb,
         3: parse_vor,
-        4: partial(parse_loc, rowcode=4),
-        5: partial(parse_loc, rowcode=5),
+        4: partial(parse_loc, row_code=4),
+        5: partial(parse_loc, row_code=5),
         6: parse_vor,
-        7: partial(parse_mrk, rowcode=7),
-        8: partial(parse_mrk, rowcode=8),
-        9: partial(parse_mrk, rowcode=9),
-        12: partial(parse_dme, rowcode=12),
-        13: partial(parse_dme, rowcode=13),
+        7: partial(parse_mrk, row_code=7),
+        8: partial(parse_mrk, row_code=8),
+        9: partial(parse_mrk, row_code=9),
+        12: partial(parse_dme, row_code=12),
+        13: partial(parse_dme, row_code=13),
     }
-    rowcode, payload = text.split(" ", 1)
-    return parser.get(int(rowcode))(payload)
+    row_code, payload = row.split(" ", 1)
+    return parser.get(int(row_code))(payload)
 
 
-record_no = 0
-with open(IN, "rt", encoding="utf-8") as handle:
-    for row in handle.readlines()[OFFSET:]:
-        record_no += 1
-        text = row.strip()
-        record = parse(text)
-        if not record:
-            break
-        print(record_no, record)
+def main():
+    record_no = 0
+    with open(IN, "rt", encoding="utf-8") as handle:
+        for row in handle.readlines()[OFFSET:]:
+            record_no += 1
+            text = row.strip()
+            record = parse(text)
+            if not record:
+                break
+            print(record_no, record)
 
+main()
