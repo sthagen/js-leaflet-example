@@ -1,0 +1,28 @@
+{
+  "type": "Feature",
+  "properties": {
+    "scalerank": 2,
+    "featurecla": "Airport",
+    "type": "major",
+    "name": "Denver Int'l",
+    "abbrev": "DEN",
+    "location": "terminal",
+    "gps_code": "KDEN",
+    "iata_code": "DEN",
+    "wikipedia": "http://en.wikipedia.org/wiki/Denver_International_Airport",
+    "natlscale": 150
+  },
+  "bbox": [
+    -104.673797,
+    39.849461,
+    -104.673797,
+    39.849461
+  ],
+  "geometry": {
+    "type": "Point",
+    "coordinates": [
+      -104.673797,
+      39.849461
+    ]
+  }
+}
